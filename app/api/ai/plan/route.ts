@@ -24,7 +24,9 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
   const planDays: PlanDay[] = [];
   let taskIndex = 0;
 
-  for (const day of days) {
+  days.forEach((day) => {
+    if (taskIndex >= tasks.length) return; // No more tasks
+
     const blocks: PlanBlock[] = [];
     let hoursLeft = dailyHours;
     let dayTasks = [];
@@ -36,7 +38,7 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
       hoursLeft -= 1.5;
     }
 
-    // Create a block for all tasks on this day
+    // Create blocks for all tasks on this day
     if (dayTasks.length > 0) {
       // Group by course
       const tasksByCourse: Record<string, any[]> = {};
@@ -62,9 +64,7 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
         blocks,
       });
     }
-
-    if (taskIndex >= tasks.length) break;
-  }
+  });
 
   return { days: planDays };
 }
