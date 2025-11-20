@@ -104,10 +104,16 @@ export default function PlannerPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('API error:', errorData);
         setError(errorData.error || 'Failed to generate plan');
       } else {
         const data = await response.json();
-        setPlan(data.plan);
+        console.log('Generated plan:', data);
+        if (data.plan) {
+          setPlan(data.plan);
+        } else {
+          setError('No plan data received from server');
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

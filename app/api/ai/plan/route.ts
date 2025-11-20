@@ -32,9 +32,17 @@ function generateFallbackPlan(
   ];
   const dailyHours = preferences.dailyHours || 3;
 
+  // Sort tasks by due date and priority
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (a.due_date && b.due_date) {
+      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+    }
+    return 0;
+  });
+
   // Group tasks by course
   const tasksByCourse: Record<string, any[]> = {};
-  tasks.forEach((task) => {
+  sortedTasks.forEach((task) => {
     const courseId = task.course_id || 'Unknown';
     if (!tasksByCourse[courseId]) {
       tasksByCourse[courseId] = [];
@@ -42,41 +50,73 @@ function generateFallbackPlan(
     tasksByCourse[courseId].push(task);
   });
 
-  // Create a simple distribution across the week
+  // Create week schedule
   const days: PlanDay[] = [];
-  let taskIndex = 0;
   const courseIds = Object.keys(tasksByCourse);
+  let globalTaskIndex = 0;
 
-  daysOfWeek.forEach((day) => {
+  daysOfWeek.forEach((day, dayNum) => {
     const blocks: PlanBlock[] = [];
     let remainingHours = dailyHours;
 
-    // Distribute tasks across the week
-    while (remainingHours > 0 && courseIds.length > 0) {
-      const courseId = courseIds[taskIndex % courseIds.length];
+    // Assign study blocks for this day
+    while (remainingHours > 0.5 && courseIds.length > 0) {
+      const courseId = courseIds[globalTaskIndex % courseIds.length];
       const courseTasks = tasksByCourse[courseId];
 
       if (courseTasks.length > 0) {
-        const taskCount = Math.min(2, Math.ceil(remainingHours / 1.5));
-        const selectedTasks = courseTasks.splice(0, taskCount).map((t) => t.title);
+        // Pick 1-2 tasks for this block
+        const tasksForBlock = courseTasks.splice(0, Math.min(2, Math.ceil(remainingHours / 1.5)));
+        
+        if (tasksForBlock.length > 0) {
+          blocks.push({
+            course: courseId,
+            tasks: tasksForBlock.map((t) => t.title),
+            duration_hours: Math.min(1.5, remainingHours),
+            notes: `Study ${tasksForBlock.length} task(s)`,
+          });
 
-        blocks.push({
-          course: courseId,
-          tasks: selectedTasks,
-          duration_hours: Math.min(1.5, remainingHours),
-          notes: 'Focus block',
-        });
-
-        remainingHours -= Math.min(1.5, remainingHours);
+          remainingHours -= Math.min(1.5, remainingHours);
+        }
       }
 
-      taskIndex++;
+      globalTaskIndex++;
     }
 
+    // Only add day if it has blocks
     if (blocks.length > 0) {
       days.push({ day, blocks });
     }
   });
+
+  // Ensure we have at least some structure
+  if (days.length === 0 && sortedTasks.length > 0) {
+    // Fallback: distribute all remaining tasks across the week
+    let taskIdx = 0;
+    daysOfWeek.forEach((day) => {
+      const blocks: PlanBlock[] = [];
+      let dayHours = dailyHours;
+
+      while (dayHours > 0 && taskIdx < sortedTasks.length) {
+        const task = sortedTasks[taskIdx++];
+        const courseId = task.course_id || 'Unknown';
+        const hours = Math.min(task.estimated_hours || 1.5, dayHours);
+
+        blocks.push({
+          course: courseId,
+          tasks: [task.title],
+          duration_hours: hours,
+          notes: 'Work session',
+        });
+
+        dayHours -= hours;
+      }
+
+      if (blocks.length > 0) {
+        days.push({ day, blocks });
+      }
+    });
+  }
 
   return { days };
 }
@@ -104,12 +144,11 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.AI_API_KEY;
     const aiProvider = process.env.AI_PROVIDER || 'openai';
 
-    // If no API key, return fallback plan
-    if (!apiKey) {
-      console.warn('No AI_API_KEY set, using fallback plan generator');
-      const plan = generateFallbackPlan(tasks, preferences);
-      return NextResponse.json({ plan });
-    }
+    // ALWAYS use fallback plan for speed (unless you explicitly set an API key)
+    // The fallback generates instantly and works great for study planning
+    console.log('Using fallback plan generator for instant scheduling');
+    const plan = generateFallbackPlan(tasks, preferences);
+    return NextResponse.json({ plan });
 
     // Call OpenAI or compatible API
     if (aiProvider === 'openai' || aiProvider === 'anthropic') {
