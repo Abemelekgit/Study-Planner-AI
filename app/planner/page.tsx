@@ -50,18 +50,54 @@ export default function PlannerPage() {
       setLoading(true);
       setError('');
 
-      const { data, error: fetchError } = await supabase
+      // Fetch tasks with course names
+      const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
-        .select('*')
+        .select(`
+          id,
+          user_id,
+          course_id,
+          title,
+          description,
+          type,
+          status,
+          priority,
+          due_date,
+          estimated_hours,
+          created_at,
+          completed_at
+        `)
         .eq('user_id', userId)
         .neq('status', 'done')
         .order('due_date', { ascending: true });
 
-      if (fetchError) {
+      if (tasksError) {
         setError('Failed to load tasks');
-        console.error(fetchError);
+        console.error(tasksError);
       } else {
-        setTasks(data || []);
+        // Fetch course names
+        const courseIds = [...new Set((tasksData || []).map(t => t.course_id))];
+        const { data: coursesData, error: coursesError } = await supabase
+          .from('courses')
+          .select('id, name')
+          .in('id', courseIds);
+
+        if (!coursesError && coursesData) {
+          // Map course names to tasks
+          const courseMap: Record<string, string> = {};
+          coursesData.forEach(c => {
+            courseMap[c.id] = c.name;
+          });
+
+          const enhancedTasks = (tasksData || []).map(t => ({
+            ...t,
+            course_name: courseMap[t.course_id] || 'Unknown Course'
+          }));
+
+          setTasks(enhancedTasks as any);
+        } else {
+          setTasks(tasksData || []);
+        }
       }
     } catch (err) {
       setError('An error occurred');
