@@ -1,5 +1,7 @@
 # Study Planner - AI-Powered Study Planning App
 
+> **🎉 Last Updated:** November 20, 2025 | **Status:** ✅ Fully Functional | **Developer:** Abemelekgit
+
 A Next.js 14 web application that helps students organize courses and tasks while leveraging AI to generate personalized weekly study plans.
 
 ## Tech Stack
