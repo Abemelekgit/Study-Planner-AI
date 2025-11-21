@@ -74,24 +74,53 @@ function generatePlanDescription(plan: { days: PlanDay[] }, tasks: any[], prefer
   return { summary, dayDescriptions, studyTips };
 }
 
-// Simple, fast plan generator
-function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
+// Priority levels for task scheduling
+function getPriorityScore(task: any): number {
+  const priorityMap: Record<string, number> = {
+    'high': 30,
+    'urgent': 40,
+    'medium': 20,
+    'low': 10,
+    'normal': 15
+  };
+  
+  let score = priorityMap[task.priority?.toLowerCase()] || 15;
+  
+  // Boost score if due date is soon
+  if (task.due_date) {
+    const dueDate = new Date(task.due_date);
+    const today = new Date();
+    const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysUntilDue <= 1) score += 50;  // Due today or tomorrow
+    else if (daysUntilDue <= 3) score += 30;  // Due this week
+    else if (daysUntilDue <= 7) score += 15;  // Due next week
+  }
+  
+  return score;
+}
+
+// Enhanced plan generator with smart task scheduling
+function generateSmartPlan(tasks: any[], preferences: any): GeneratedPlan {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const dailyHours = preferences.dailyHours || 3;
+  
+  // Sort tasks by priority and due date
+  const sortedTasks = [...tasks].sort((a, b) => getPriorityScore(b) - getPriorityScore(a));
   
   const planDays: PlanDay[] = [];
   let taskIndex = 0;
 
   days.forEach((day) => {
-    if (taskIndex >= tasks.length) return; // No more tasks
+    if (taskIndex >= sortedTasks.length) return; // No more tasks
 
     const blocks: PlanBlock[] = [];
     let hoursLeft = dailyHours;
     let dayTasks = [];
 
-    // Assign tasks to this day
-    while (hoursLeft > 0.5 && taskIndex < tasks.length) {
-      dayTasks.push(tasks[taskIndex]);
+    // Assign tasks to this day based on priority
+    while (hoursLeft > 0.5 && taskIndex < sortedTasks.length) {
+      dayTasks.push(sortedTasks[taskIndex]);
       taskIndex++;
       hoursLeft -= 1.5;
     }
@@ -109,11 +138,12 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
       // Create a block per course
       Object.entries(tasksByCourse).forEach(([courseId, courseTasks]: [string, any[]]) => {
         const courseName = courseTasks[0]?.course_name || courseId || 'Study';
+        const blockHours = Math.min(dailyHours, courseTasks.length * 1.5);
         blocks.push({
           course: courseName,
           tasks: courseTasks.map((t: any) => t.title),
-          duration_hours: Math.min(dailyHours, courseTasks.length * 1.5),
-          notes: `${courseTasks.length} task(s)`,
+          duration_hours: blockHours,
+          notes: `${courseTasks.length} task(s) | Priority: ${courseTasks[0]?.priority || 'normal'}`,
         });
       });
 
@@ -126,7 +156,7 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
 
   // Generate descriptions
   const basePlan = { days: planDays };
-  const { summary, dayDescriptions, studyTips } = generatePlanDescription(basePlan, tasks, preferences);
+  const { summary, dayDescriptions, studyTips } = generatePlanDescription(basePlan, sortedTasks, preferences);
 
   return { 
     days: planDays,
@@ -136,22 +166,47 @@ function generateSimplePlan(tasks: any[], preferences: any): GeneratedPlan {
   };
 }
 
-// Main handler
+// Main handler with enhanced validation
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { tasks, preferences } = body;
 
+    // Validate tasks
     if (!tasks || !Array.isArray(tasks)) {
       return NextResponse.json(
-        { error: 'Invalid tasks format' },
+        { error: 'Invalid tasks format. Expected an array of tasks.' },
         { status: 400 }
       );
     }
 
+    if (tasks.length === 0) {
+      return NextResponse.json(
+        { error: 'No tasks provided. Please add tasks before generating a plan.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate task structure
+    const invalidTasks = tasks.filter(t => !t.title || !t.course_id);
+    if (invalidTasks.length > 0) {
+      return NextResponse.json(
+        { error: `${invalidTasks.length} task(s) missing required fields (title, course_id)` },
+        { status: 400 }
+      );
+    }
+
+    // Validate preferences
     if (!preferences || typeof preferences !== 'object') {
       return NextResponse.json(
-        { error: 'Invalid preferences format' },
+        { error: 'Invalid preferences format. Expected an object with study preferences.' },
+        { status: 400 }
+      );
+    }
+
+    if (!preferences.dailyHours || preferences.dailyHours <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid daily hours preference. Must be greater than 0.' },
         { status: 400 }
       );
     }
@@ -159,15 +214,23 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.AI_API_KEY;
     const aiProvider = process.env.AI_PROVIDER || 'openai';
 
-    // Use simple plan generator
-    console.log('Generating plan for', tasks.length, 'tasks');
-    const plan = generateSimplePlan(tasks, preferences);
-    console.log('Plan generated with', plan.days.length, 'days');
+    // Use smart plan generator with priority-based scheduling
+    console.log(`[AI Plan] Generating smart plan for ${tasks.length} tasks with ${preferences.dailyHours}h daily preference`);
+    const plan = generateSmartPlan(tasks, preferences);
+    console.log(`[AI Plan] Plan generated successfully with ${plan.days.length} study days`);
     return NextResponse.json({ plan });
   } catch (error) {
-    console.error('AI plan generation error:', error);
+    console.error('[AI Plan] Generation error:', error);
+    
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to generate plan' },
+      { error: 'Failed to generate study plan. Please try again.' },
       { status: 500 }
     );
   }

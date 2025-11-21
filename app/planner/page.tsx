@@ -162,6 +162,67 @@ export default function PlannerPage() {
     }
   };
 
+  // Helper function to export plan as text
+  const handleExportPlan = () => {
+    if (!plan) return;
+
+    let exportText = '📚 STUDY PLAN EXPORT\n';
+    exportText += '='.repeat(50) + '\n\n';
+
+    // Add summary
+    if (plan.summary) {
+      exportText += '📋 PLAN SUMMARY\n';
+      exportText += '-'.repeat(50) + '\n';
+      exportText += plan.summary + '\n\n';
+    }
+
+    // Add weekly schedule
+    exportText += '📅 WEEKLY SCHEDULE\n';
+    exportText += '-'.repeat(50) + '\n';
+    plan.days.forEach(day => {
+      exportText += `\n${day.day.toUpperCase()}:\n`;
+      day.blocks.forEach(block => {
+        exportText += `  📖 ${block.course} (${block.duration_hours.toFixed(1)}h)\n`;
+        block.tasks.forEach(task => {
+          exportText += `     • ${task}\n`;
+        });
+      });
+    });
+
+    // Add day descriptions
+    if (plan.dayDescriptions) {
+      exportText += '\n\n📖 DETAILED DAY GUIDE\n';
+      exportText += '-'.repeat(50) + '\n';
+      plan.days.forEach(day => {
+        exportText += `\n${day.day}:\n`;
+        exportText += plan.dayDescriptions![day.day] + '\n';
+      });
+    }
+
+    // Add study tips
+    if (plan.studyTips) {
+      exportText += '\n\n💡 STUDY TIPS & STRATEGIES\n';
+      exportText += '-'.repeat(50) + '\n';
+      plan.studyTips.forEach((tip, idx) => {
+        exportText += `${idx + 1}. ${tip}\n`;
+      });
+    }
+
+    exportText += '\n\n' + '='.repeat(50) + '\n';
+    exportText += `Generated on ${new Date().toLocaleString()}\n`;
+
+    // Create blob and download
+    const blob = new Blob([exportText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `study-plan-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   if (loading) {
     return (
       <>
@@ -222,6 +283,16 @@ export default function PlannerPage() {
                   >
                     {generating ? 'Generating...' : 'Generate Plan'}
                   </button>
+
+                  {plan && (
+                    <button
+                      type="button"
+                      onClick={handleExportPlan}
+                      className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition flex items-center justify-center gap-2 mt-3"
+                    >
+                      <span>📥</span> Export as Text
+                    </button>
+                  )}
                 </form>
               </div>
             </div>
