@@ -237,80 +237,126 @@ export default function PlannerPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {plan.days.map((planDay, dayIndex) => (
-                    <div
-                      key={dayIndex}
-                      className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden"
-                    >
-                      <div className="bg-slate-700 px-6 py-4 border-b border-slate-600">
-                        <h3 className="text-lg font-bold text-white">
-                          {planDay.day}
-                        </h3>
-                      </div>
+                  {/* Weekly Plan Table */}
+                  <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-slate-700 border-b border-slate-600">
+                            <th className="px-4 py-3 text-left font-bold text-white">Day</th>
+                            <th className="px-4 py-3 text-left font-bold text-white">Course</th>
+                            <th className="px-4 py-3 text-left font-bold text-white">Tasks</th>
+                            <th className="px-4 py-3 text-center font-bold text-white">Duration</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {plan.days.map((planDay, dayIndex) => (
+                            planDay.blocks.map((block, blockIndex) => (
+                              <tr
+                                key={`${dayIndex}-${blockIndex}`}
+                                className={`border-b border-slate-600 hover:bg-slate-700 transition ${
+                                  blockIndex === 0 ? 'bg-slate-800' : 'bg-slate-850'
+                                }`}
+                              >
+                                {/* Day - only show on first block of the day */}
+                                {blockIndex === 0 ? (
+                                  <td className="px-4 py-3 font-semibold text-white align-top">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                      {planDay.day}
+                                    </div>
+                                  </td>
+                                ) : (
+                                  <td className="px-4 py-3"></td>
+                                )}
 
-                      <div className="p-6 space-y-4">
-                        {planDay.blocks.length === 0 ? (
-                          <p className="text-slate-500 text-center py-4">
-                            No sessions scheduled
-                          </p>
-                        ) : (
-                          planDay.blocks.map((block, blockIndex) => (
-                            <div
-                              key={blockIndex}
-                              className="bg-slate-700 rounded-lg p-4 border-l-4 border-blue-500"
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-semibold text-white">
-                                  {block.course}
-                                </h4>
-                                <span className="text-xs bg-blue-600 px-2 py-1 rounded text-white">
-                                  {block.duration_hours}h
-                                </span>
-                              </div>
+                                {/* Course Name */}
+                                <td className="px-4 py-3 text-slate-300">
+                                  <span className="bg-purple-900 bg-opacity-50 px-2 py-1 rounded text-purple-200 text-xs font-medium">
+                                    {block.course}
+                                  </span>
+                                </td>
 
-                              {block.notes && (
-                                <p className="text-xs text-slate-400 mb-2 italic">
-                                  {block.notes}
-                                </p>
-                              )}
+                                {/* Tasks List */}
+                                <td className="px-4 py-3 text-slate-300">
+                                  <ul className="space-y-1">
+                                    {block.tasks.map((task, idx) => (
+                                      <li key={idx} className="flex items-start gap-2">
+                                        <span className="text-blue-400 mt-0.5">✓</span>
+                                        <span className="text-slate-200">{task}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </td>
 
-                              <ul className="space-y-1">
-                                {block.tasks.map((task, taskIndex) => (
-                                  <li
-                                    key={taskIndex}
-                                    className="text-sm text-slate-300 flex items-start"
-                                  >
-                                    <span className="mr-2">✓</span>
-                                    <span>{task}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))
-                        )}
-                      </div>
+                                {/* Duration */}
+                                <td className="px-4 py-3 text-center">
+                                  <span className="bg-green-900 bg-opacity-60 px-3 py-1 rounded-full text-green-200 font-semibold text-sm">
+                                    {block.duration_hours.toFixed(1)}h
+                                  </span>
+                                </td>
+                              </tr>
+                            ))
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  ))}
+                  </div>
 
-                  {/* Plan Summary */}
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Days Planned</p>
+                      <p className="text-3xl font-bold text-blue-400">{plan.days.length}</p>
+                    </div>
+
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Study Sessions</p>
+                      <p className="text-3xl font-bold text-purple-400">
+                        {plan.days.reduce((sum, day) => sum + day.blocks.length, 0)}
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Total Hours</p>
+                      <p className="text-3xl font-bold text-green-400">
+                        {plan.days
+                          .reduce((sum, day) => sum + day.blocks.reduce((bSum, b) => bSum + b.duration_hours, 0), 0)
+                          .toFixed(1)}
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Courses</p>
+                      <p className="text-3xl font-bold text-orange-400">
+                        {new Set(plan.days.flatMap(day => day.blocks.map(b => b.course))).size}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Daily Breakdown with Progress Bars */}
                   <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-                    <h4 className="font-bold text-white mb-4">Plan Summary</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-slate-400 text-sm">Total Days</p>
-                        <p className="text-2xl font-bold text-blue-400">
-                          {plan.days.length}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-400 text-sm">Total Blocks</p>
-                        <p className="text-2xl font-bold text-green-400">
-                          {plan.days.reduce(
-                            (sum, day) => sum + day.blocks.length,
-                            0
-                          )}
-                        </p>
-                      </div>
+                    <h4 className="font-bold text-white mb-4 flex items-center gap-2">
+                      <span>📊</span> Daily Breakdown
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {plan.days.map((day, idx) => {
+                        const dayTotal = day.blocks.reduce((sum, b) => sum + b.duration_hours, 0);
+                        return (
+                          <div key={idx} className="bg-slate-700 rounded p-3 flex justify-between items-center">
+                            <span className="text-slate-300 font-medium">{day.day}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-32 bg-slate-600 rounded-full h-2">
+                                <div
+                                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                                  style={{ width: `${Math.min((dayTotal / dailyHours) * 100, 100)}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-green-400 font-semibold text-sm w-12 text-right">{dayTotal.toFixed(1)}h</span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
