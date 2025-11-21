@@ -4,6 +4,65 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100;
+    @apply bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100;
+  }
+
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-blue-500 to-purple-600 rounded-full;
+  }
+}
+
+@layer components {
+  /* Glassmorphism cards */
+  .glass-card {
+    @apply backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
+  }
+
+  /* Smooth gradient button */
+  .btn-gradient {
+    @apply relative inline-flex items-center justify-center px-8 py-3 font-medium rounded-xl overflow-hidden group transition-all duration-300;
+  }
+
+  .btn-gradient::before {
+    @apply absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-100 group-hover:opacity-90 transition-opacity duration-300;
+    content: '';
+  }
+
+  .btn-gradient span {
+    @apply relative z-10;
+  }
+
+  /* Animated gradient border */
+  .animated-border {
+    @apply relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-[1px];
+  }
+
+  .animated-border::before {
+    @apply absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500;
+    content: '';
+  }
+
+  /* Neon glow effect */
+  .neon-glow {
+    @apply shadow-lg shadow-blue-500/20;
+  }
+
+  /* Smooth transitions */
+  .smooth-transition {
+    @apply transition-all duration-300 ease-in-out;
   }
 }

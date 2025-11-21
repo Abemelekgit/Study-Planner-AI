@@ -237,60 +237,108 @@ export default function PlannerPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-slate-950 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-4xl font-bold text-white mb-8">AI Study Planner</h1>
+      <main className="relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+          <div className="absolute top-40 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-8 right-20 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        </div>
 
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header Section */}
+          <div className="mb-12">
+            <h1 className="text-6xl font-black mb-4 leading-tight">
+              <span className="gradient-text">AI Study Planner</span>
+            </h1>
+            <p className="text-xl text-slate-300 max-w-2xl">Generate intelligent, personalized weekly study schedules powered by smart task prioritization and AI insights.</p>
+          </div>
+
+          {/* Error Alert */}
           {error && (
-            <div className="mb-6 p-4 bg-red-900 text-red-100 rounded">
-              {error}
+            <div className="mb-8 glass-card p-4 border-l-4 border-red-500 bg-red-500/10 animate-in slide-in-from-top">
+              <p className="text-red-200 font-medium">⚠️ {error}</p>
             </div>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Form Section */}
             <div className="lg:col-span-1">
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 sticky top-24">
-                <h2 className="text-xl font-bold text-white mb-4">
-                  Generate Plan
-                </h2>
+              <div className="glass-card p-8 space-y-6 border border-white/10 sticky top-24">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.5 1.5H3.75A2.25 2.25 0 001.5 3.75v12.5A2.25 2.25 0 003.75 18.5h12.5a2.25 2.25 0 002.25-2.25V9.5M10.5 1.5v8m0-8L15 6M6 10h8M6 13h5" />
+                    </svg>
+                  </div>
+                  <h2 className="text-lg font-bold text-white">Study Preferences</h2>
+                </div>
 
-                <form onSubmit={handleGeneratePlan} className="space-y-4">
+                <form onSubmit={handleGeneratePlan} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wider">
                       Daily Study Hours
                     </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="12"
-                      step="0.5"
-                      value={dailyHours}
-                      onChange={(e) => setDailyHours(parseFloat(e.target.value))}
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white focus:outline-none focus:border-blue-500"
-                    />
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="1"
+                        max="12"
+                        step="0.5"
+                        value={dailyHours}
+                        onChange={(e) => setDailyHours(parseFloat(e.target.value))}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                      />
+                      <span className="absolute right-4 top-3 text-slate-400 font-medium">hrs</span>
+                    </div>
                   </div>
 
-                  <div className="pt-2 text-xs text-slate-400">
-                    <p className="mb-2">📚 Tasks to schedule:</p>
-                    <p className="font-bold text-blue-400">{tasks.length}</p>
+                  {/* Task Counter Card */}
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Tasks Ready</p>
+                    <p className="text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{tasks.length}</p>
                   </div>
 
+                  {/* Generate Button */}
                   <button
                     type="submit"
                     disabled={generating || tasks.length === 0}
-                    className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 text-white rounded font-medium transition"
+                    className="w-full relative group overflow-hidden rounded-xl px-6 py-3 font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {generating ? 'Generating...' : 'Generate Plan'}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-100 group-hover:opacity-90 group-disabled:opacity-50 transition-opacity"></div>
+                    <span className="relative flex items-center justify-center gap-2">
+                      {generating ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Generate Plan
+                        </>
+                      )}
+                    </span>
                   </button>
 
+                  {/* Export Button */}
                   {plan && (
                     <button
                       type="button"
                       onClick={handleExportPlan}
-                      className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition flex items-center justify-center gap-2 mt-3"
+                      className="w-full group overflow-hidden rounded-xl px-6 py-3 font-semibold text-white transition-all duration-300 border border-green-500/50 hover:border-green-400 bg-green-500/10 hover:bg-green-500/20"
                     >
-                      <span>📥</span> Export as Text
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export as Text
+                      </span>
                     </button>
                   )}
                 </form>
@@ -304,33 +352,40 @@ export default function PlannerPage() {
                   <p className="text-slate-400 mb-4 text-lg">
                     👋 No plan generated yet
                   </p>
-                  <p className="text-slate-500">
-                    Adjust your preferences and click "Generate Plan" to create
-                    your AI-powered weekly study schedule.
+                  <p className="text-slate-400">
+                    Adjust your preferences and click "Generate Plan" to create your AI-powered weekly study schedule.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-in fade-in duration-500">
                   {/* Plan Summary */}
                   {plan.summary && (
-                    <div className="bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-700 rounded-lg p-6">
-                      <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-lg">
-                        <span>📋</span> Study Plan Overview
-                      </h3>
-                      <p className="text-blue-100 leading-relaxed">{plan.summary}</p>
+                    <div className="glass-card p-8 border border-white/10 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                      <div className="relative">
+                        <h3 className="font-bold text-white mb-4 flex items-center gap-3 text-xl">
+                          <span className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                            </svg>
+                          </span>
+                          Study Plan Overview
+                        </h3>
+                        <p className="text-slate-300 leading-relaxed text-sm">{plan.summary}</p>
+                      </div>
                     </div>
                   )}
 
                   {/* Weekly Plan Table */}
-                  <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                  <div className="glass-card overflow-hidden border border-white/10">
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-slate-700 border-b border-slate-600">
-                            <th className="px-4 py-3 text-left font-bold text-white">Day</th>
-                            <th className="px-4 py-3 text-left font-bold text-white">Course</th>
-                            <th className="px-4 py-3 text-left font-bold text-white">Tasks</th>
-                            <th className="px-4 py-3 text-center font-bold text-white">Duration</th>
+                          <tr className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border-b border-white/10">
+                            <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-wider text-xs">Day</th>
+                            <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-wider text-xs">Course</th>
+                            <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-wider text-xs">Tasks</th>
+                            <th className="px-6 py-4 text-center font-bold text-white uppercase tracking-wider text-xs">Duration</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -338,44 +393,45 @@ export default function PlannerPage() {
                             planDay.blocks.map((block, blockIndex) => (
                               <tr
                                 key={`${dayIndex}-${blockIndex}`}
-                                className={`border-b border-slate-600 hover:bg-slate-700 transition ${
-                                  blockIndex === 0 ? 'bg-slate-800' : 'bg-slate-850'
-                                }`}
+                                className="border-b border-white/10 hover:bg-white/5 transition-colors duration-300 group"
                               >
                                 {/* Day - only show on first block of the day */}
                                 {blockIndex === 0 ? (
-                                  <td className="px-4 py-3 font-semibold text-white align-top">
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                      {planDay.day}
+                                  <td className="px-6 py-4 font-semibold text-white align-top">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 group-hover:scale-125 transition-transform"></div>
+                                      <span className="font-bold">{planDay.day}</span>
                                     </div>
                                   </td>
                                 ) : (
-                                  <td className="px-4 py-3"></td>
+                                  <td className="px-6 py-4"></td>
                                 )}
 
                                 {/* Course Name */}
-                                <td className="px-4 py-3 text-slate-300">
-                                  <span className="bg-purple-900 bg-opacity-50 px-2 py-1 rounded text-purple-200 text-xs font-medium">
+                                <td className="px-6 py-4">
+                                  <span className="px-3 py-1 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-200 text-xs font-semibold border border-purple-500/30 group-hover:border-purple-500/60 transition-colors">
                                     {block.course}
                                   </span>
                                 </td>
 
                                 {/* Tasks List */}
-                                <td className="px-4 py-3 text-slate-300">
-                                  <ul className="space-y-1">
+                                <td className="px-6 py-4">
+                                  <ul className="space-y-2">
                                     {block.tasks.map((task, idx) => (
-                                      <li key={idx} className="flex items-start gap-2">
-                                        <span className="text-blue-400 mt-0.5">✓</span>
-                                        <span className="text-slate-200">{task}</span>
+                                      <li key={idx} className="flex items-start gap-3">
+                                        <span className="text-blue-400 font-bold mt-0.5 text-lg">→</span>
+                                        <span className="text-slate-200 group-hover:text-white transition-colors">{task}</span>
                                       </li>
                                     ))}
                                   </ul>
                                 </td>
 
                                 {/* Duration */}
-                                <td className="px-4 py-3 text-center">
-                                  <span className="bg-green-900 bg-opacity-60 px-3 py-1 rounded-full text-green-200 font-semibold text-sm">
+                                <td className="px-6 py-4 text-center">
+                                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 font-bold text-sm border border-green-500/30 group-hover:border-green-500/60 transition-colors">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-.707.707a1 1 0 101.414 1.414L9 10.414V6z" clipRule="evenodd" />
+                                    </svg>
                                     {block.duration_hours.toFixed(1)}h
                                   </span>
                                 </td>
@@ -389,54 +445,80 @@ export default function PlannerPage() {
 
                   {/* Summary Stats */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Days Planned</p>
-                      <p className="text-3xl font-bold text-blue-400">{plan.days.length}</p>
+                    <div className="glass-card p-6 border border-white/10 hover:border-blue-500/50 transition-all duration-300 group cursor-default">
+                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-3">Days Planned</p>
+                      <div className="flex items-end justify-between">
+                        <p className="text-4xl font-black bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent">{plan.days.length}</p>
+                        <svg className="w-12 h-12 text-blue-500/20 group-hover:text-blue-500/40 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                        </svg>
+                      </div>
                     </div>
 
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Study Sessions</p>
-                      <p className="text-3xl font-bold text-purple-400">
-                        {plan.days.reduce((sum, day) => sum + day.blocks.length, 0)}
-                      </p>
+                    <div className="glass-card p-6 border border-white/10 hover:border-purple-500/50 transition-all duration-300 group cursor-default">
+                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-3">Study Sessions</p>
+                      <div className="flex items-end justify-between">
+                        <p className="text-4xl font-black bg-gradient-to-r from-purple-400 to-purple-500 bg-clip-text text-transparent">
+                          {plan.days.reduce((sum, day) => sum + day.blocks.length, 0)}
+                        </p>
+                        <svg className="w-12 h-12 text-purple-500/20 group-hover:text-purple-500/40 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     </div>
 
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Total Hours</p>
-                      <p className="text-3xl font-bold text-green-400">
-                        {plan.days
-                          .reduce((sum, day) => sum + day.blocks.reduce((bSum, b) => bSum + b.duration_hours, 0), 0)
-                          .toFixed(1)}
-                      </p>
+                    <div className="glass-card p-6 border border-white/10 hover:border-green-500/50 transition-all duration-300 group cursor-default">
+                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-3">Total Hours</p>
+                      <div className="flex items-end justify-between">
+                        <p className="text-4xl font-black bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent">
+                          {plan.days
+                            .reduce((sum, day) => sum + day.blocks.reduce((bSum, b) => bSum + b.duration_hours, 0), 0)
+                            .toFixed(1)}
+                        </p>
+                        <svg className="w-12 h-12 text-green-500/20 group-hover:text-green-500/40 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-.707.707a1 1 0 101.414 1.414L9 10.414V6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     </div>
 
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Courses</p>
-                      <p className="text-3xl font-bold text-orange-400">
-                        {new Set(plan.days.flatMap(day => day.blocks.map(b => b.course))).size}
-                      </p>
+                    <div className="glass-card p-6 border border-white/10 hover:border-orange-500/50 transition-all duration-300 group cursor-default">
+                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-3">Courses</p>
+                      <div className="flex items-end justify-between">
+                        <p className="text-4xl font-black bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+                          {new Set(plan.days.flatMap(day => day.blocks.map(b => b.course))).size}
+                        </p>
+                        <svg className="w-12 h-12 text-orange-500/20 group-hover:text-orange-500/40 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5.951-1.429 5.951 1.429a1 1 0 001.169-1.409l-7-14z" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
 
                   {/* Daily Breakdown with Progress Bars */}
-                  <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-                    <h4 className="font-bold text-white mb-4 flex items-center gap-2">
-                      <span>📊</span> Daily Breakdown
+                  <div className="glass-card p-8 border border-white/10">
+                    <h4 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
+                      <span className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                      </span>
+                      Daily Breakdown
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {plan.days.map((day, idx) => {
                         const dayTotal = day.blocks.reduce((sum, b) => sum + b.duration_hours, 0);
+                        const percentFilled = Math.min((dayTotal / dailyHours) * 100, 100);
                         return (
-                          <div key={idx} className="bg-slate-700 rounded p-3 flex justify-between items-center">
-                            <span className="text-slate-300 font-medium">{day.day}</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-32 bg-slate-600 rounded-full h-2">
-                                <div
-                                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
-                                  style={{ width: `${Math.min((dayTotal / dailyHours) * 100, 100)}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-green-400 font-semibold text-sm w-12 text-right">{dayTotal.toFixed(1)}h</span>
+                          <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300">
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="font-semibold text-white">{day.day}</span>
+                              <span className="text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-lg">{dayTotal.toFixed(1)}h / {dailyHours}h</span>
+                            </div>
+                            <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/50 transition-all duration-500"
+                                style={{ width: `${percentFilled}%` }}
+                              ></div>
                             </div>
                           </div>
                         );
@@ -446,15 +528,23 @@ export default function PlannerPage() {
 
                   {/* Day-by-Day Descriptions */}
                   {plan.dayDescriptions && (
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-                      <h4 className="font-bold text-white mb-4 flex items-center gap-2">
-                        <span>📖</span> Day-by-Day Guide
+                    <div className="glass-card p-8 border border-white/10">
+                      <h4 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
+                        <span className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600">
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 2a1 1 0 011-1h8a1 1 0 011 1v12a1 1 0 11-2 0V3H7v12a1 1 0 11-2 0V2z" clipRule="evenodd" />
+                          </svg>
+                        </span>
+                        Day-by-Day Guide
                       </h4>
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {plan.days.map((day) => (
-                          <div key={day.day} className="bg-slate-700 rounded-lg p-4 border-l-4 border-purple-500">
-                            <h5 className="font-semibold text-white mb-2 text-lg">{day.day}</h5>
-                            <p className="text-slate-300 leading-relaxed">{plan.dayDescriptions![day.day]}</p>
+                          <div key={day.day} className="group p-5 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300">
+                            <h5 className="font-bold text-white mb-3 text-base flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 group-hover:scale-150 transition-transform"></span>
+                              {day.day}
+                            </h5>
+                            <p className="text-slate-300 leading-relaxed text-sm group-hover:text-slate-200 transition-colors">{plan.dayDescriptions![day.day]}</p>
                           </div>
                         ))}
                       </div>
@@ -463,17 +553,27 @@ export default function PlannerPage() {
 
                   {/* Study Tips */}
                   {plan.studyTips && (
-                    <div className="bg-gradient-to-r from-green-900 to-emerald-900 border border-green-700 rounded-lg p-6">
-                      <h4 className="font-bold text-white mb-4 flex items-center gap-2 text-lg">
-                        <span>💡</span> Study Tips & Strategies
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {plan.studyTips.map((tip, idx) => (
-                          <div key={idx} className="bg-slate-700 bg-opacity-50 rounded p-3 flex gap-3">
-                            <span className="text-green-400 font-bold text-lg flex-shrink-0">{idx + 1}.</span>
-                            <p className="text-slate-200 text-sm leading-relaxed">{tip}</p>
-                          </div>
-                        ))}
+                    <div className="glass-card p-8 border border-white/10 relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                      <div className="relative">
+                        <h4 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
+                          <span className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600">
+                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          </span>
+                          Study Tips & Strategies
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {plan.studyTips.map((tip, idx) => (
+                            <div key={idx} className="p-4 rounded-xl bg-white/5 border border-emerald-500/20 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300 group/tip">
+                              <div className="flex gap-4">
+                                <span className="text-2xl font-black bg-gradient-to-br from-green-400 to-emerald-500 bg-clip-text text-transparent flex-shrink-0 group-hover/tip:scale-110 transition-transform">{idx + 1}</span>
+                                <p className="text-slate-200 text-sm leading-relaxed group-hover/tip:text-white transition-colors">{tip}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
