@@ -20,6 +20,9 @@ interface PlanDay {
 
 interface GeneratedPlan {
   days: PlanDay[];
+  summary?: string;
+  dayDescriptions?: Record<string, string>;
+  studyTips?: string[];
 }
 
 export default function PlannerPage() {
@@ -237,6 +240,16 @@ export default function PlannerPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
+                  {/* Plan Summary */}
+                  {plan.summary && (
+                    <div className="bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-700 rounded-lg p-6">
+                      <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-lg">
+                        <span>📋</span> Study Plan Overview
+                      </h3>
+                      <p className="text-blue-100 leading-relaxed">{plan.summary}</p>
+                    </div>
+                  )}
+
                   {/* Weekly Plan Table */}
                   <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
@@ -359,6 +372,40 @@ export default function PlannerPage() {
                       })}
                     </div>
                   </div>
+
+                  {/* Day-by-Day Descriptions */}
+                  {plan.dayDescriptions && (
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                      <h4 className="font-bold text-white mb-4 flex items-center gap-2">
+                        <span>📖</span> Day-by-Day Guide
+                      </h4>
+                      <div className="space-y-3">
+                        {plan.days.map((day) => (
+                          <div key={day.day} className="bg-slate-700 rounded-lg p-4 border-l-4 border-purple-500">
+                            <h5 className="font-semibold text-white mb-2 text-lg">{day.day}</h5>
+                            <p className="text-slate-300 leading-relaxed">{plan.dayDescriptions![day.day]}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Study Tips */}
+                  {plan.studyTips && (
+                    <div className="bg-gradient-to-r from-green-900 to-emerald-900 border border-green-700 rounded-lg p-6">
+                      <h4 className="font-bold text-white mb-4 flex items-center gap-2 text-lg">
+                        <span>💡</span> Study Tips & Strategies
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {plan.studyTips.map((tip, idx) => (
+                          <div key={idx} className="bg-slate-700 bg-opacity-50 rounded p-3 flex gap-3">
+                            <span className="text-green-400 font-bold text-lg flex-shrink-0">{idx + 1}.</span>
+                            <p className="text-slate-200 text-sm leading-relaxed">{tip}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
