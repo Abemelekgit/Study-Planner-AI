@@ -314,6 +314,20 @@ export default function PlannerPage() {
     }
   };
 
+  // Keyboard shortcut: press 'g' to generate plan
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'g' && !generating) {
+        const fakeEvent = { preventDefault: () => {} } as unknown as React.FormEvent;
+        // Trigger form submit programmatically
+        // Note: this uses the existing handleGeneratePlan function
+        handleGeneratePlan(fakeEvent);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [generating, tasks, dailyHours]);
+
   if (loading) {
     return (
       <>
