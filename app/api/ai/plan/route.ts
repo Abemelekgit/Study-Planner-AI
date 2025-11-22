@@ -216,7 +216,46 @@ export async function POST(request: NextRequest) {
 
     // Use smart plan generator with priority-based scheduling
     console.log(`[AI Plan] Generating smart plan for ${tasks.length} tasks with ${preferences.dailyHours}h daily preference`);
-    const plan = generateSmartPlan(tasks, preferences);
+    let plan = generateSmartPlan(tasks, preferences);
+
+    // If an OpenAI API key is configured, attempt to generate an enhanced natural-language summary
+    const openaiKey = process.env.AI_API_KEY;
+    if (openaiKey) {
+      try {
+        const prompt = `You are an assistant that transforms a study plan into a concise, helpful summary and per-day detailed guidance. Plan summary: ${plan.summary}\nDays: ${plan.days.length}\nTotal hours: ${plan.days.reduce((s, d) => s + d.blocks.reduce((bs, b) => bs + b.duration_hours, 0), 0).toFixed(1)}\nProvide a short (2-3 sentence) human-friendly overview and a 2-3 sentence suggestion per day.`;
+
+        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiKey}`,
+          },
+          body: JSON.stringify({
+            model: process.env.AI_MODEL || 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'You are a helpful assistant that writes study-plan summaries and day-by-day guidance.' },
+              { role: 'user', content: prompt },
+            ],
+            max_tokens: 400,
+            temperature: 0.7,
+          }),
+        });
+
+        if (resp.ok) {
+          const json = await resp.json();
+          const text = json?.choices?.[0]?.message?.content;
+          if (text) {
+            // Attach the enhanced summary to the plan
+            plan.summary = `${plan.summary}\n\n[AI Notes]\n${text}`;
+          }
+        } else {
+          console.warn('[AI Plan] OpenAI returned non-OK response', await resp.text());
+        }
+      } catch (err) {
+        console.warn('[AI Plan] OpenAI enhancement failed:', err);
+      }
+    }
+
     console.log(`[AI Plan] Plan generated successfully with ${plan.days.length} study days`);
     return NextResponse.json({ plan });
   } catch (error) {

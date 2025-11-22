@@ -34,6 +34,8 @@ export default function PlannerPage() {
   const [error, setError] = useState('');
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [blockExplanation, setBlockExplanation] = useState<string | null>(null);
+  const [explainingBlock, setExplainingBlock] = useState<null | { dayIndex: number; blockIndex: number }>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -223,13 +225,57 @@ export default function PlannerPage() {
     document.body.removeChild(a);
   };
 
+  // Move a block left (-1) or right (+1) across days
+  const moveBlock = (dayIndex: number, blockIndex: number, direction: -1 | 1) => {
+    if (!plan) return;
+    const newPlan = structuredClone(plan);
+    const targetDay = dayIndex + direction;
+    if (targetDay < 0 || targetDay >= newPlan.days.length) return;
+
+    const [block] = newPlan.days[dayIndex].blocks.splice(blockIndex, 1);
+    newPlan.days[targetDay].blocks.push(block);
+    setPlan(newPlan);
+  };
+
+  // Promote priority (bump priority label for the first task in a block)
+  const promoteBlockPriority = (dayIndex: number, blockIndex: number) => {
+    if (!plan) return;
+    const priorities = ['low', 'normal', 'medium', 'high', 'urgent'];
+    const newPlan = structuredClone(plan);
+    const block = newPlan.days[dayIndex].blocks[blockIndex];
+    // We don't have original priority on block tasks here; just set a note or increase notes marker
+    block.notes = (block.notes || '') + ' | priority-increased';
+    setPlan(newPlan);
+  };
+
+  const explainBlock = async (dayIndex: number, blockIndex: number) => {
+    if (!plan) return;
+    setExplainingBlock({ dayIndex, blockIndex });
+    setBlockExplanation(null);
+    const block = plan.days[dayIndex].blocks[blockIndex];
+    try {
+      const resp = await fetch('/api/ai/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course: block.course, tasks: block.tasks, duration_hours: block.duration_hours, notes: block.notes }),
+      });
+      const data = await resp.json();
+      setBlockExplanation(data.explanation || data.error || 'No explanation available');
+    } catch (err) {
+      setBlockExplanation('Failed to fetch explanation');
+      console.error(err);
+    } finally {
+      setExplainingBlock(null);
+    }
+  };
+
   if (loading) {
     return (
       <>
         <Navbar />
         <div className="flex items-center justify-center min-h-screen">
           <p className="text-slate-300">Loading...</p>
-        </div>
+          </div>
       </>
     );
   }
@@ -292,6 +338,17 @@ export default function PlannerPage() {
                       <span className="absolute right-4 top-3 text-slate-400 font-medium">hrs</span>
                     </div>
                   </div>
+
+                    {/* Block Explanation Panel */}
+                    {blockExplanation && (
+                      <div className="glass-card p-6 border border-white/10">
+                        <div className="flex justify-between items-start mb-4">
+                          <h4 className="text-white font-semibold">Block Explanation</h4>
+                          <button onClick={() => setBlockExplanation(null)} className="text-sm text-slate-300 hover:text-white">Close</button>
+                        </div>
+                        <p className="text-slate-200 text-sm leading-relaxed">{blockExplanation}</p>
+                      </div>
+                    )}
 
                   {/* Task Counter Card */}
                   <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
@@ -435,6 +492,46 @@ export default function PlannerPage() {
                                     {block.duration_hours.toFixed(1)}h
                                   </span>
                                 </td>
+                                  {/* Actions */}
+                                  <td className="px-6 py-4 text-center">
+                                    <div className="flex items-center justify-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => moveBlock(dayIndex, blockIndex, -1)}
+                                        className="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm"
+                                        title="Move to previous day"
+                                      >
+                                        ←
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => moveBlock(dayIndex, blockIndex, 1)}
+                                        className="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm"
+                                        title="Move to next day"
+                                      >
+                                        →
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => promoteBlockPriority(dayIndex, blockIndex)}
+                                        className="px-2 py-1 rounded bg-yellow-600 hover:bg-yellow-500 text-sm text-white"
+                                        title="Increase priority"
+                                      >
+                                        ⬆
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => explainBlock(dayIndex, blockIndex)}
+                                        className="px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-sm text-white"
+                                        title="Get explanation"
+                                      >
+                                        {explainingBlock && explainingBlock.dayIndex === dayIndex && explainingBlock.blockIndex === blockIndex ? '...' : '💬'}
+                                      </button>
+                                    </div>
+                                  </td>
                               </tr>
                             ))
                           ))}
