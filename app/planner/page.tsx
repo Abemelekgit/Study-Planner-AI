@@ -225,6 +225,20 @@ export default function PlannerPage() {
     document.body.removeChild(a);
   };
 
+  // Save current plan to localStorage
+  const savePlanToLocal = () => {
+    if (!plan) return;
+    try {
+      window.localStorage.setItem('studyplanner:last_plan', JSON.stringify({ plan, savedAt: new Date().toISOString() }));
+      // small user feedback
+      setError('Plan saved locally');
+      setTimeout(() => setError(''), 2000);
+    } catch (err) {
+      console.error('Failed to save plan locally', err);
+      setError('Failed to save plan locally');
+    }
+  };
+
   // Move a block left (-1) or right (+1) across days
   const moveBlock = (dayIndex: number, blockIndex: number, direction: -1 | 1) => {
     if (!plan) return;
