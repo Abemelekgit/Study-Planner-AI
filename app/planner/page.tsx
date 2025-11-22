@@ -258,6 +258,18 @@ export default function PlannerPage() {
     }
   };
 
+  // Clear saved plan from localStorage
+  const clearLocalPlan = () => {
+    try {
+      window.localStorage.removeItem('studyplanner:last_plan');
+      setError('Local plan cleared');
+      setTimeout(() => setError(''), 2000);
+    } catch (err) {
+      console.error('Failed to clear local plan', err);
+      setError('Failed to clear local plan');
+    }
+  };
+
   // Move a block left (-1) or right (+1) across days
   const moveBlock = (dayIndex: number, blockIndex: number, direction: -1 | 1) => {
     if (!plan) return;
