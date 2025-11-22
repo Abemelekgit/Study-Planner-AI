@@ -239,6 +239,25 @@ export default function PlannerPage() {
     }
   };
 
+  // Load last saved plan from localStorage
+  const loadPlanFromLocal = () => {
+    try {
+      const raw = window.localStorage.getItem('studyplanner:last_plan');
+      if (!raw) {
+        setError('No local plan found');
+        setTimeout(() => setError(''), 2000);
+        return;
+      }
+      const obj = JSON.parse(raw);
+      setPlan(obj.plan);
+      setError('Loaded plan from local storage');
+      setTimeout(() => setError(''), 2000);
+    } catch (err) {
+      console.error('Failed to load plan locally', err);
+      setError('Failed to load plan');
+    }
+  };
+
   // Move a block left (-1) or right (+1) across days
   const moveBlock = (dayIndex: number, blockIndex: number, direction: -1 | 1) => {
     if (!plan) return;
