@@ -412,6 +412,15 @@ export default function PlannerPage() {
                       </span>
                     </button>
                   )}
+                  {plan && (
+                    <button
+                      type="button"
+                      onClick={savePlanToLocal}
+                      className="w-full mt-2 px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
+                    >
+                      💾 Save Plan Locally
+                    </button>
+                  )}
                 </form>
               </div>
             </div>
