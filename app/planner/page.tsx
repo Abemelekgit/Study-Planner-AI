@@ -440,6 +440,13 @@ export default function PlannerPage() {
                       💾 Save Plan Locally
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={loadPlanFromLocal}
+                    className="w-full mt-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium"
+                  >
+                    📂 Load Last Plan
+                  </button>
                 </form>
               </div>
             </div>
