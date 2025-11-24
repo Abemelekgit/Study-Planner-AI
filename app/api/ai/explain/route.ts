@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fallback explanation generator (deterministic)
+  // Fallback explanation generator (deterministic)
+  // Note: If no AI_API_KEY is configured or the OpenAI call fails, we return this deterministic guidance so the planner still provides useful suggestions.
     const firstTasks = tasks.slice(0, 3).join(', ');
     const explanation = `For ${course} spend about ${duration_hours.toFixed(1)} hour(s). Start with: ${firstTasks}${
       tasks.length > 3 ? `, and ${tasks.length - 3} more task(s)` : ''
