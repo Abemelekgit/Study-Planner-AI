@@ -227,3 +227,5 @@ Would you like me to:
 4. **Change display** → Time-of-day suggestions, difficulty ratings
 
 Let me know which one you'd prefer!
+
+Tip: You can save generated plans locally in the app and export them as a text file — this helps keep snapshots before making changes.
