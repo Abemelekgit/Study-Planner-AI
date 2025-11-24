@@ -82,6 +82,12 @@ export function Navbar() {
                 >
                   AI Planner
                 </Link>
+                <Link
+                  href="/contribute"
+                  className="text-slate-300 hover:text-white transition"
+                >
+                  Contribute
+                </Link>
               </div>
             )}
           </div>
