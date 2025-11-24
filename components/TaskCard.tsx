@@ -46,7 +46,7 @@ export function TaskCard({
 
   const dueDate = task.due_date
     ? new Date(task.due_date).toLocaleDateString()
-    : 'No due date';
+    : 'No due date set';
 
   return (
     <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-slate-600 transition">
