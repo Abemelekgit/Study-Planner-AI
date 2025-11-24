@@ -7,6 +7,11 @@
     @apply bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100;
   }
 
+  /* Theme variables */
+  :root {
+    --sp-accent: #7c3aed; /* used as a subtle accent in the UI */
+  }
+
   /* Smooth scrollbar */
   ::-webkit-scrollbar {
     @apply w-2;
