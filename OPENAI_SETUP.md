@@ -12,6 +12,7 @@ Example `.env.local` entries:
 AI_API_KEY=sk-....
 AI_MODEL=gpt-4o-mini
 ```
+Note: you can set AI_MODEL to choose a model (for example: AI_MODEL=gpt-4o-mini). If unspecified, the server falls back to a sensible default.
 
 After adding the key, restart the dev server. The planner will attempt to call OpenAI and attach enhanced summaries and explanations when available. If the key is not present, the planner falls back to deterministic summaries so it remains functional.
 
