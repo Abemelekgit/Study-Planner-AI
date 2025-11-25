@@ -501,6 +501,15 @@ export default function PlannerPage() {
                       💾 Save Plan (Local)
                     </button>
                   )}
+                  {plan && (
+                    <button
+                      type="button"
+                      onClick={savePlanToServer}
+                      className="w-full mt-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold"
+                    >
+                      ☁️ Save Plan (Server)
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={loadPlanFromLocal}
