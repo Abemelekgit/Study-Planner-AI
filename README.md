@@ -140,6 +140,18 @@ create policy "Users can delete own sessions" on public.study_sessions for delet
 
 ```bash
 npm run dev
+## Usage
+
+### Server-side plan persistence
+
+If you'd like generated plans to be saved to your Supabase database, set a service role key in your environment (do NOT commit this key):
+
+```
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+Then run the SQL migration `db/create_plans_table.sql` (or use the Supabase SQL editor) to create the `plans` table. The app exposes `POST /api/plans/save` which the planner UI uses to persist plans for the current authenticated user.
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
