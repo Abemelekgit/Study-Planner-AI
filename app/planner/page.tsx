@@ -32,6 +32,7 @@ export default function PlannerPage() {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [blockExplanation, setBlockExplanation] = useState<string | null>(null);
@@ -236,6 +237,40 @@ export default function PlannerPage() {
     } catch (err) {
       console.error('Failed to save plan locally', err);
       setError('Failed to save plan locally');
+    }
+  };
+
+  // Save current plan to the server (Supabase)
+  const savePlanToServer = async () => {
+    if (!plan || !user) {
+      setError('No plan or user available to save');
+      setTimeout(() => setError(''), 2500);
+      return;
+    }
+
+    try {
+      setError('');
+      setSuccessMessage('');
+      const resp = await fetch('/api/plans/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title: `Plan ${new Date().toISOString()}`, plan }),
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to save plan to server');
+        setTimeout(() => setError(''), 3000);
+        return;
+      }
+
+      setSuccessMessage('Plan saved to server successfully');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      console.log('Saved plan to server:', data);
+    } catch (err) {
+      console.error('Save to server failed', err);
+      setError('Save to server failed');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
