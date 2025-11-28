@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "contrib": "echo \"Thanks for contributing to Study Planner!\"",
-    "save-plan-test": "echo 'curl -X POST http://localhost:3000/api/plans/save -H \"Content-Type: application/json\" -d \"{\'user_id\': \'<your-user-id>\', \'title\': \'Test Plan\', \'plan\': {}}\' '"
+    "save-plan-test": "echo 'curl -X POST http://localhost:3000/api/plans/save -H \"Content-Type: application/json\" -d \"{\\\"user_id\\\": \\\"<your-user-id>\\\", \\\"title\\\": \\\"Test Plan\\\", \\\"plan\\\": {}}\" '",
+    "list-plans-test": "echo 'curl -s http://localhost:3000/api/plans/list?user_id=<your-user-id> | jq '.' '"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing user_id query parameter' }, { status: 400 });
     }
 
-    const { data, error } = await serverSupabase.from('plans').select('id, title, created_at').eq('user_id', user_id).order('created_at', { ascending: false });
+    // Include plan_json so clients can load a saved plan directly
+    const { data, error } = await serverSupabase.from('plans').select('id, title, created_at, plan_json').eq('user_id', user_id).order('created_at', { ascending: false });
     if (error) {
       console.error('[ListPlans] Supabase error:', error);
       return NextResponse.json({ error: 'Failed to fetch plans' }, { status: 500 });

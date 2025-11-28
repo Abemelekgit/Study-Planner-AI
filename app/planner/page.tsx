@@ -29,11 +29,13 @@ export default function PlannerPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [dailyHours, setDailyHours] = useState(3);
+  const [dailyHoursInput, setDailyHoursInput] = useState(3);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
+  const [savedPlans, setSavedPlans] = useState<Array<{ id: string; title: string; created_at: string; plan_json?: any }>>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [blockExplanation, setBlockExplanation] = useState<string | null>(null);
   const [explainingBlock, setExplainingBlock] = useState<null | { dayIndex: number; blockIndex: number }>(null);
@@ -265,12 +267,75 @@ export default function PlannerPage() {
       }
 
       setSuccessMessage('Plan saved to server successfully');
+      console.log('analytics:event', { action: 'save_plan_server', user: user?.id });
       setTimeout(() => setSuccessMessage(''), 3000);
       console.log('Saved plan to server:', data);
     } catch (err) {
       console.error('Save to server failed', err);
       setError('Save to server failed');
       setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  // Load saved plans for current user from server
+  const loadSavedPlans = async () => {
+    if (!user) {
+      setError('Not authenticated');
+      setTimeout(() => setError(''), 2000);
+      return;
+    }
+
+    try {
+      const resp = await fetch(`/api/plans/list?user_id=${encodeURIComponent(user.id)}`);
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to load saved plans');
+        setTimeout(() => setError(''), 2500);
+        return;
+      }
+      setSavedPlans(data.plans || []);
+      console.log('analytics:event', { action: 'list_saved_plans', user: user.id });
+    } catch (err) {
+      console.error('Failed to fetch saved plans', err);
+      setError('Failed to fetch saved plans');
+      setTimeout(() => setError(''), 2500);
+    }
+  };
+
+  const loadSavedPlan = (planEntry: any) => {
+    if (!planEntry || !planEntry.plan_json) {
+      setError('Invalid saved plan');
+      setTimeout(() => setError(''), 2000);
+      return;
+    }
+    setPlan(planEntry.plan_json);
+    setSuccessMessage(`Loaded plan: ${planEntry.title}`);
+    setTimeout(() => setSuccessMessage(''), 2500);
+    console.log('analytics:event', { action: 'load_saved_plan', user: user?.id, planId: planEntry.id });
+  };
+
+  const deleteSavedPlan = async (planId: string) => {
+    if (!user) return;
+    try {
+      const resp = await fetch('/api/plans/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId, user_id: user.id }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to delete plan');
+        setTimeout(() => setError(''), 2500);
+        return;
+      }
+      setSavedPlans((s) => s.filter(p => p.id !== planId));
+      setSuccessMessage('Deleted saved plan');
+      setTimeout(() => setSuccessMessage(''), 2000);
+      console.log('analytics:event', { action: 'delete_saved_plan', user: user.id, planId });
+    } catch (err) {
+      console.error('Delete plan failed', err);
+      setError('Delete plan failed');
+      setTimeout(() => setError(''), 2500);
     }
   };
 
@@ -363,6 +428,12 @@ export default function PlannerPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [generating, tasks, dailyHours]);
 
+  // Debounce dailyHours updates when user types quickly
+  useEffect(() => {
+    const t = setTimeout(() => setDailyHours(dailyHoursInput), 350);
+    return () => clearTimeout(t);
+  }, [dailyHoursInput]);
+
   if (loading) {
     return (
       <>
@@ -400,6 +471,11 @@ export default function PlannerPage() {
               <p className="text-red-200 font-medium">⚠️ {error}</p>
             </div>
           )}
+                  {successMessage && (
+                    <div role="status" aria-live="polite" className="mb-4 glass-card p-3 border-l-4 border-emerald-400 bg-emerald-400/5">
+                      <p className="text-emerald-200 font-medium">✅ {successMessage}</p>
+                    </div>
+                  )}
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Form Section */}
@@ -425,8 +501,8 @@ export default function PlannerPage() {
                         min="1"
                         max="12"
                         step="0.5"
-                        value={dailyHours}
-                        onChange={(e) => setDailyHours(parseFloat(e.target.value))}
+                        value={dailyHoursInput}
+                        onChange={(e) => setDailyHoursInput(parseFloat(e.target.value))}
                         className="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                       />
                       <span className="absolute right-4 top-3 text-slate-400 font-medium">hrs</span>
@@ -501,11 +577,20 @@ export default function PlannerPage() {
                       💾 Save Plan (Local)
                     </button>
                   )}
+                  {/* Quick load saved plans from server */}
+                  <button
+                    type="button"
+                    onClick={loadSavedPlans}
+                    className="w-full mt-2 px-6 py-3 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white font-semibold"
+                  >
+                    🔃 Load Saved Plans
+                  </button>
                   {plan && (
                     <button
                       type="button"
                       onClick={savePlanToServer}
                       className="w-full mt-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold"
+                      aria-label="Save plan to server"
                     >
                       ☁️ Save Plan (Server)
                     </button>
@@ -514,6 +599,7 @@ export default function PlannerPage() {
                     type="button"
                     onClick={loadPlanFromLocal}
                     className="w-full mt-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium"
+                    aria-label="Load plan from local storage"
                   >
                     📂 Load Last Plan
                   </button>
