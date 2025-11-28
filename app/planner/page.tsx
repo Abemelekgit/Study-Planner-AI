@@ -609,6 +609,30 @@ export default function PlannerPage() {
 
             {/* Plan Display Section */}
             <div className="lg:col-span-3">
+              {/* Saved Plans Panel (server-saved plans) */}
+              {savedPlans && savedPlans.length > 0 && (
+                <div className="glass-card p-4 mb-6 border border-white/10">
+                  <h4 className="font-bold text-white mb-3">Saved Plans</h4>
+                  <div className="space-y-2">
+                    {savedPlans.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between bg-slate-800/40 p-3 rounded">
+                        <div>
+                          <div className="text-white font-semibold">{p.title}</div>
+                          <div className="text-slate-400 text-xs">{new Date(p.created_at).toLocaleString()}</div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => loadSavedPlan(p)} className="px-3 py-1 bg-indigo-600 rounded text-white text-sm" aria-label={`Load saved plan ${p.title}`}>
+                            Load
+                          </button>
+                          <button onClick={() => deleteSavedPlan(p.id)} className="px-3 py-1 bg-red-600 rounded text-white text-sm" aria-label={`Delete saved plan ${p.title}`}>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {!plan ? (
                 <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 text-center">
                   <p className="text-slate-400 mb-4 text-lg">
