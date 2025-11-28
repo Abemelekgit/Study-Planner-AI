@@ -729,6 +729,7 @@ export default function PlannerPage() {
                                         onClick={() => moveBlock(dayIndex, blockIndex, -1)}
                                         className="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm"
                                         title="Move to previous day"
+                                        aria-label={`Move block ${dayIndex}-${blockIndex} to previous day`}
                                       >
                                         ←
                                       </button>
@@ -738,6 +739,7 @@ export default function PlannerPage() {
                                         onClick={() => moveBlock(dayIndex, blockIndex, 1)}
                                         className="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm"
                                         title="Move to next day"
+                                        aria-label={`Move block ${dayIndex}-${blockIndex} to next day`}
                                       >
                                         →
                                       </button>
@@ -747,6 +749,7 @@ export default function PlannerPage() {
                                         onClick={() => promoteBlockPriority(dayIndex, blockIndex)}
                                         className="px-2 py-1 rounded bg-yellow-600 hover:bg-yellow-500 text-sm text-white"
                                         title="Increase priority"
+                                        aria-label={`Increase priority for block ${dayIndex}-${blockIndex}`}
                                       >
                                         ⬆
                                       </button>
@@ -756,6 +759,7 @@ export default function PlannerPage() {
                                         onClick={() => explainBlock(dayIndex, blockIndex)}
                                         className="px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-sm text-white"
                                         title="Get explanation"
+                                        aria-label={`Explain block ${dayIndex}-${blockIndex}`}
                                       >
                                         {explainingBlock && explainingBlock.dayIndex === dayIndex && explainingBlock.blockIndex === blockIndex ? '...' : '💬'}
                                       </button>
