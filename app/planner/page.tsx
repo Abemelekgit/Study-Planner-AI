@@ -121,6 +121,8 @@ export default function PlannerPage() {
     setError('');
     setPlan(null);
 
+    console.log('analytics:event', { action: 'generate_plan', user: user?.id });
+
     try {
       if (tasks.length === 0) {
         setError('No tasks found. Create some tasks first.');
