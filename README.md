@@ -152,6 +152,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 Then run the SQL migration `db/create_plans_table.sql` (or use the Supabase SQL editor) to create the `plans` table. The app exposes `POST /api/plans/save` which the planner UI uses to persist plans for the current authenticated user.
 
+Additional APIs for saved plans:
+
+- `GET /api/plans/list?user_id=<user>` — returns saved plans (including `plan_json`) for the user.
+- `POST /api/plans/delete` — delete a saved plan. Body: `{ planId: string, user_id: string }`.
+
+Use the Supabase SQL editor to run `db/plans_rls.sql` after creating `plans` to enforce row-level security policies.
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
