@@ -120,10 +120,18 @@ function generateSmartPlan(tasks: any[], preferences: any): GeneratedPlan {
     let dayTasks = [];
 
     // Assign tasks to this day based on priority
-    while (hoursLeft > 0.5 && taskIndex < sortedTasks.length) {
-      dayTasks.push(sortedTasks[taskIndex]);
-      taskIndex++;
-      hoursLeft -= 1.5;
+    while (hoursLeft > 0.25 && taskIndex < sortedTasks.length) {
+      const t = sortedTasks[taskIndex];
+      const est = Number(t.estimated_hours) || 1.0;
+      // If task fits, assign it; otherwise try a smaller task
+      if (est <= hoursLeft || est <= 0.5) {
+        dayTasks.push(t);
+        taskIndex++;
+        hoursLeft -= est;
+      } else {
+        // If task doesn't fit, break to next day to keep tasks contiguous
+        break;
+      }
     }
 
     // Create blocks for all tasks on this day
@@ -139,7 +147,9 @@ function generateSmartPlan(tasks: any[], preferences: any): GeneratedPlan {
       // Create a block per course
       Object.entries(tasksByCourse).forEach(([courseId, courseTasks]: [string, any[]]) => {
         const courseName = courseTasks[0]?.course_name || courseId || 'Study';
-        const blockHours = Math.min(dailyHours, courseTasks.length * 1.5);
+        // Sum estimated hours for this course's tasks, fallback to 1.0 per task
+        const totalEst = courseTasks.reduce((s, ct) => s + (Number(ct.estimated_hours) || 1.0), 0);
+        const blockHours = Math.min(dailyHours, totalEst);
         blocks.push({
           course: courseName,
           tasks: courseTasks.map((t: any) => t.title),
