@@ -231,7 +231,8 @@ export async function POST(request: NextRequest) {
 
     // If an OpenAI API key is configured, attempt to generate an enhanced natural-language summary
     const openaiKey = process.env.AI_API_KEY;
-    if (openaiKey) {
+    const useAI = body?.useAI !== undefined ? Boolean(body.useAI) : true;
+    if (openaiKey && useAI) {
       try {
         // Request a structured JSON response with summary, dayDescriptions (map), and studyTips (array)
         const messages = [
