@@ -34,6 +34,7 @@ export default function PlannerPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [useAIEnhancement, setUseAIEnhancement] = useState(true);
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
   const [savedPlans, setSavedPlans] = useState<Array<{ id: string; title: string; created_at: string; plan_json?: any }>>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -145,6 +146,7 @@ export default function PlannerPage() {
           preferences: {
             dailyHours: Number(dailyHours),
           },
+          useAI: useAIEnhancement,
         }),
       });
 
@@ -509,6 +511,17 @@ export default function PlannerPage() {
                       />
                       <span className="absolute right-4 top-3 text-slate-400 font-medium">hrs</span>
                     </div>
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-3 text-sm text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={useAIEnhancement}
+                        onChange={(e) => setUseAIEnhancement(e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">Enhance plan using AI</span>
+                    </label>
                   </div>
 
                     {/* Block Explanation Panel */}
