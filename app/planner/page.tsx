@@ -672,7 +672,12 @@ export default function PlannerPage() {
                           </span>
                           Study Plan Overview
                         </h3>
-                        <p className="text-slate-300 leading-relaxed text-sm">{plan.summary}</p>
+                        <div className="flex items-center gap-3">
+                          <p className="text-slate-300 leading-relaxed text-sm">{plan.summary}</p>
+                          {plan.summary && plan.summary.includes('[AI Summary]') && (
+                            <span className="ml-2 inline-flex items-center px-2 py-1 rounded bg-indigo-600 text-xs text-white">AI enhanced</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
