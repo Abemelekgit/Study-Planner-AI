@@ -10,7 +10,9 @@
     "contrib": "echo \"Thanks for contributing to Study Planner!\"",
     "save-plan-test": "echo 'curl -X POST http://localhost:3000/api/plans/save -H \"Content-Type: application/json\" -d \"{\\\"user_id\\\": \\\"<your-user-id>\\\", \\\"title\\\": \\\"Test Plan\\\", \\\"plan\\\": {}}\" '",
     "list-plans-test": "echo 'curl -s http://localhost:3000/api/plans/list?user_id=<your-user-id> | jq '.' '"
+      "ai-plan-test": "echo 'curl -s -X POST http://localhost:3000/api/ai/plan -H \"Content-Type: application/json\" -d \"{\\\"tasks\\\":[{\\\"id\\\":\\\"t1\\\",\\\"title\\\":\\\"Sample Task\\\",\\\"course_id\\\":\\\"c1\\\",\\\"estimated_hours\\\":1}],\\\"preferences\\\":{\\\"dailyHours\\\":3},\\\"useAI\\\":false}\" | jq '.' '"
   },
+
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
