@@ -44,3 +44,24 @@ export interface User {
   email: string;
   user_metadata?: Record<string, unknown>;
 }
+
+export interface AIPlanResponse {
+  summary?: string;
+  dayDescriptions?: Record<string, string>;
+  studyTips?: string[];
+}
+
+export interface GeneratedPlan {
+  days: Array<{
+    day: string;
+    blocks: Array<{
+      course: string;
+      tasks: string[];
+      duration_hours: number;
+      notes?: string;
+    }>;
+  }>;
+  summary?: string;
+  dayDescriptions?: Record<string, string>;
+  studyTips?: string[];
+}
