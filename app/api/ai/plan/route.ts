@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import callOpenAI from '@/lib/openaiClient';
 
 interface PlanBlock {
   course: string;
@@ -222,34 +223,44 @@ export async function POST(request: NextRequest) {
     const openaiKey = process.env.AI_API_KEY;
     if (openaiKey) {
       try {
-        const prompt = `You are an assistant that transforms a study plan into a concise, helpful summary and per-day detailed guidance. Plan summary: ${plan.summary}\nDays: ${plan.days.length}\nTotal hours: ${plan.days.reduce((s, d) => s + d.blocks.reduce((bs, b) => bs + b.duration_hours, 0), 0).toFixed(1)}\nProvide a short (2-3 sentence) human-friendly overview and a 2-3 sentence suggestion per day.`;
+        // Request a structured JSON response with summary, dayDescriptions (map), and studyTips (array)
+        const messages = [
+          { role: 'system', content: 'You are an assistant that returns JSON. Respond ONLY with valid JSON. The JSON object must contain keys: summary (string), dayDescriptions (object mapping day->string), studyTips (array of strings).' },
+          { role: 'user', content: `Plan summary: ${plan.summary}\nDays: ${plan.days.length}\nTotal hours: ${plan.days.reduce((s, d) => s + d.blocks.reduce((bs, b) => bs + b.duration_hours, 0), 0).toFixed(1)}\nDays detail: ${JSON.stringify(plan.days)}\nReturn a JSON object with keys: summary, dayDescriptions, studyTips.` }
+        ];
 
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openaiKey}`,
-          },
-          body: JSON.stringify({
-            model: process.env.AI_MODEL || 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: 'You are a helpful assistant that writes study-plan summaries and day-by-day guidance.' },
-              { role: 'user', content: prompt },
-            ],
-            max_tokens: 400,
-            temperature: 0.7,
-          }),
-        });
+        const aiResp = await callOpenAI(messages, { max_tokens: 700, temperature: 0.6, retries: 3, timeoutMs: 10000 });
 
-        if (resp.ok) {
-          const json = await resp.json();
-          const text = json?.choices?.[0]?.message?.content;
-          if (text) {
-            // Attach the enhanced summary to the plan
-            plan.summary = `${plan.summary}\n\n[AI Notes]\n${text}`;
+        // aiResp may be parsed JSON or raw; try to extract choices[0].message.content first
+        let contentText = null as string | null;
+        if (aiResp?.choices?.[0]?.message?.content) {
+          contentText = aiResp.choices[0].message.content;
+        } else if (aiResp?.raw) {
+          // raw string from helper
+          contentText = aiResp.raw;
+        } else if (typeof aiResp === 'string') {
+          contentText = aiResp;
+        }
+
+        if (contentText) {
+          // Try to extract JSON block from the content text
+          const jsonMatch = contentText.match(/\{[\s\S]*\}$/);
+          let parsed: any = null;
+          try {
+            parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(contentText);
+          } catch (parseErr) {
+            console.warn('[AI Plan] Failed to parse AI JSON response', parseErr);
           }
-        } else {
-          console.warn('[AI Plan] OpenAI returned non-OK response', await resp.text());
+
+          if (parsed) {
+            if (parsed.summary) plan.summary = `${plan.summary}\n\n[AI Summary]\n${parsed.summary}`;
+            if (parsed.dayDescriptions && typeof parsed.dayDescriptions === 'object') {
+              plan.dayDescriptions = { ...plan.dayDescriptions, ...parsed.dayDescriptions };
+            }
+            if (Array.isArray(parsed.studyTips)) {
+              plan.studyTips = Array.from(new Set([...(plan.studyTips || []), ...parsed.studyTips]));
+            }
+          }
         }
       } catch (err) {
         console.warn('[AI Plan] OpenAI enhancement failed:', err);
