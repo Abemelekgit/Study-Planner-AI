@@ -260,7 +260,11 @@ export async function POST(request: NextRequest) {
           try {
             parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(contentText);
           } catch (parseErr) {
+            // Log a truncated sample for debugging when parsing fails
             console.warn('[AI Plan] Failed to parse AI JSON response', parseErr);
+            if (contentText && contentText.length > 0) {
+              console.warn('[AI Plan] AI response (truncated):', contentText.slice(0, 800));
+            }
           }
 
           if (parsed) {
