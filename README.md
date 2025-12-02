@@ -220,6 +220,10 @@ lib/
 .env.local                  # Environment variables (create from .env.local.example)
 ```
 
+## Contributions
+
+ - Note (Dec 2, 2025): Small iterative improvements and accessibility tweaks were applied to the project.
+
 ## API Routes
 
 ### POST /api/ai/plan
