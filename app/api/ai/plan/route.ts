@@ -235,9 +235,10 @@ export async function POST(request: NextRequest) {
     if (openaiKey && useAI) {
       try {
         // Request a structured JSON response with summary, dayDescriptions (map), and studyTips (array)
+        // Ask the model to return structured JSON. Include an explicit schema and a short example to increase reliability.
         const messages = [
-          { role: 'system', content: 'You are an assistant that returns JSON. Respond ONLY with valid JSON. The JSON object must contain keys: summary (string), dayDescriptions (object mapping day->string), studyTips (array of strings).' },
-          { role: 'user', content: `Plan summary: ${plan.summary}\nDays: ${plan.days.length}\nTotal hours: ${plan.days.reduce((s, d) => s + d.blocks.reduce((bs, b) => bs + b.duration_hours, 0), 0).toFixed(1)}\nDays detail: ${JSON.stringify(plan.days)}\nReturn a JSON object with keys: summary, dayDescriptions, studyTips.` }
+          { role: 'system', content: 'You are an assistant that returns only valid JSON. The JSON object MUST include: "summary" (string), "dayDescriptions" (object mapping day->string), and "studyTips" (array of strings). Do not include any additional top-level keys.' },
+          { role: 'user', content: `Schema example:\n{\n  "summary": "Brief plan overview.",\n  "dayDescriptions": { "Monday": "Short guidance for Monday" },\n  "studyTips": ["Tip 1", "Tip 2"]\n}\n\nNow produce JSON following the schema. Plan summary: ${plan.summary}\nTotal days: ${plan.days.length}\nTotal hours: ${plan.days.reduce((s, d) => s + d.blocks.reduce((bs, b) => bs + b.duration_hours, 0), 0).toFixed(1)}\nDays detail: ${JSON.stringify(plan.days)}\nRespond only with the JSON object.` }
         ];
 
         const aiResp = await callOpenAI(messages, { max_tokens: 700, temperature: 0.6, retries: 3, timeoutMs: 10000 });
