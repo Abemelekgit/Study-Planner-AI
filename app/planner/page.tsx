@@ -586,17 +586,19 @@ export default function PlannerPage() {
                     </button>
                   )}
                   {plan && (
-                    <button
-                      type="button"
-                      onClick={savePlanToLocal}
-                      className="w-full mt-2 px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
-                    >
-                      💾 Save Plan (Local)
-                    </button>
-                    <div className="mt-2">
-                      <label className="text-xs text-slate-300">Plan title</label>
-                      <input value={planTitle} onChange={(e) => setPlanTitle(e.target.value)} className="w-full mt-1 px-3 py-2 rounded bg-slate-800 text-white" />
-                    </div>
+                    <>
+                      <button
+                        type="button"
+                        onClick={savePlanToLocal}
+                        className="w-full mt-2 px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
+                      >
+                        💾 Save Plan (Local)
+                      </button>
+                      <div className="mt-2">
+                        <label className="text-xs text-slate-300">Plan title</label>
+                        <input value={planTitle} onChange={(e) => setPlanTitle(e.target.value)} className="w-full mt-1 px-3 py-2 rounded bg-slate-800 text-white" />
+                      </div>
+                    </>
                   )}
                   {/* Quick load saved plans from server */}
                   <button
@@ -851,15 +853,29 @@ export default function PlannerPage() {
                   </div>
 
                   {/* Daily Breakdown with Progress Bars */}
-                  <div className="glass-card p-8 border border-white/10">
-                    <h4 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
-                      <span className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                        </svg>
-                      </span>
-                      Daily Breakdown
-                    </h4>
+                  <div className="glass-card p-8 border border-white/10 relative">
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="font-bold text-white flex items-center gap-3 text-lg">
+                        <span className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                          </svg>
+                        </span>
+                        Daily Breakdown
+                      </h4>
+                      <div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard?.writeText(plan.summary || '');
+                            setSuccessMessage('Summary copied to clipboard');
+                            setTimeout(() => setSuccessMessage(''), 2000);
+                          }}
+                          className="px-3 py-1 rounded bg-slate-700 text-xs text-white"
+                        >
+                          Copy summary
+                        </button>
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {plan.days.map((day, idx) => {
                         const dayTotal = day.blocks.reduce((sum, b) => sum + b.duration_hours, 0);

@@ -8,6 +8,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
   console.warn('Warning: SUPABASE_SERVICE_ROLE_KEY not set. Server-side plan saving will be disabled.');
 }
 
-export const serverSupabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false },
-});
+// Only create the server-side Supabase client when a service key is present.
+export const serverSupabase = (supabaseUrl && supabaseServiceKey)
+  ? createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } })
+  : null as any;
