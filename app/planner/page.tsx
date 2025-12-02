@@ -871,6 +871,7 @@ export default function PlannerPage() {
                             setTimeout(() => setSuccessMessage(''), 2000);
                           }}
                           className="px-3 py-1 rounded bg-slate-700 text-xs text-white"
+                          aria-label="Copy plan summary to clipboard"
                         >
                           Copy summary
                         </button>
