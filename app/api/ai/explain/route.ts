@@ -49,12 +49,13 @@ export async function POST(request: NextRequest) {
   // Fallback explanation generator (deterministic)
   // Note: If no AI_API_KEY is configured or the OpenAI call fails, we return this deterministic guidance so the planner still provides useful suggestions.
   // This fallback is kept intentionally simple and deterministic for reliability and testability.
-    const firstTasks = tasks.slice(0, 3).join(', ');
-    const explanation = `For ${course} spend about ${duration_hours.toFixed(1)} hour(s). Start with: ${firstTasks}${
-      tasks.length > 3 ? `, and ${tasks.length - 3} more task(s)` : ''
-    }. Break work into focused 25–50 minute sessions and review notes after each session. Prioritize harder tasks first.`;
+    const firstTasks = Array.isArray(tasks) ? tasks.slice(0, 3).join(', ') : '';
+    const hrs = typeof duration_hours === 'number' ? duration_hours.toFixed(1) : 'an appropriate amount of';
+    const moreNote = Array.isArray(tasks) && tasks.length > 3 ? `, and ${tasks.length - 3} more task(s)` : '';
 
-    return NextResponse.json({ explanation });
+    const explanation = `(Fallback) For ${course} spend about ${hrs} hour(s). Start with: ${firstTasks}${moreNote}. Break work into focused 25–50 minute sessions and review notes after each session. Prioritize harder tasks first.`;
+
+    return NextResponse.json({ explanation, fallback: true });
   } catch (err) {
     console.error('[Explain API] error:', err);
     return NextResponse.json({ error: 'Failed to generate explanation' }, { status: 500 });
