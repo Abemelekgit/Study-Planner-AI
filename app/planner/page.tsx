@@ -261,8 +261,9 @@ export default function PlannerPage() {
       const resp = await fetch('/api/plans/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: user.id, title: `Plan ${new Date().toISOString()}`, plan }),
+        body: JSON.stringify({ user_id: user.id, title: planTitle || `Plan ${new Date().toISOString()}`, plan }),
       });
+      
 
       const data = await resp.json();
       if (!resp.ok) {
