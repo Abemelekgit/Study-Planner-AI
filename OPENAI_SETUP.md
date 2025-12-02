@@ -14,8 +14,10 @@ AI_MODEL=gpt-4o-mini
 ```
 Note: you can set AI_MODEL to choose a model (for example: AI_MODEL=gpt-4o-mini). If unspecified, the server falls back to a sensible default.
 
-Implementation notes: The server will attempt to contact OpenAI and may retry a few times on transient failures. The helper in `lib/openaiClient.ts` uses a short timeout (default 8s) and retries (default 2). You can tune `AI_MODEL` and other options via env vars.
+Implementation notes: The server will attempt to contact OpenAI and may retry a few times on transient failures. The helper in `lib/openaiClient.ts` uses a short timeout (default 8s) and retries (default 2). You can tune `AI_MODEL` and other options via env vars (for example `AI_TIMEOUT_MS` and `AI_RETRIES`).
 
 After adding the key, restart the dev server. The planner will attempt to call OpenAI and attach enhanced summaries and explanations when available. If the key is not present, the planner falls back to deterministic summaries so it remains functional.
+
+Tip (Dec 2, 2025): If you see occasional timeouts, increase `AI_TIMEOUT_MS` or `AI_RETRIES` in your environment to improve reliability.
 
 Security note: Keep your API key secret — do NOT commit it to GitHub.
