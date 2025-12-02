@@ -36,6 +36,7 @@ export default function PlannerPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [useAIEnhancement, setUseAIEnhancement] = useState(true);
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
+  const [planTitle, setPlanTitle] = useState('My Study Plan');
   const [savedPlans, setSavedPlans] = useState<Array<{ id: string; title: string; created_at: string; plan_json?: any }>>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [blockExplanation, setBlockExplanation] = useState<string | null>(null);
@@ -591,6 +592,10 @@ export default function PlannerPage() {
                     >
                       💾 Save Plan (Local)
                     </button>
+                    <div className="mt-2">
+                      <label className="text-xs text-slate-300">Plan title</label>
+                      <input value={planTitle} onChange={(e) => setPlanTitle(e.target.value)} className="w-full mt-1 px-3 py-2 rounded bg-slate-800 text-white" />
+                    </div>
                   )}
                   {/* Quick load saved plans from server */}
                   <button
