@@ -11,6 +11,7 @@
   :root {
     --sp-accent: #7c3aed; /* used as a subtle accent in the UI */
     --sp-accent-dark: #5b21b6;
+    --sp-success: #10b981;
   }
 
   /* Smooth scrollbar */
