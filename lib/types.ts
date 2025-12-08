@@ -1,5 +1,5 @@
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
-export type TaskPriority = 'low' | 'medium' | 'high';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskType = 'homework' | 'reading' | 'exam' | 'project' | 'other';
 
 export interface Course {
