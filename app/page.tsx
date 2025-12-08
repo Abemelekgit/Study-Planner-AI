@@ -13,7 +13,7 @@ export default function Home() {
             </h1>
             <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
               Organize your courses, manage your tasks, and let AI help you create
-              the perfect study schedule. Build better study habits with our smart planner.
+              the perfect study schedule. Build better study habits with our intelligent planner.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
