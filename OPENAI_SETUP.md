@@ -20,4 +20,6 @@ After adding the key, restart the dev server. The planner will attempt to call O
 
 Tip (Dec 2, 2025): If you see occasional timeouts, increase `AI_TIMEOUT_MS` or `AI_RETRIES` in your environment to improve reliability.
 
+Updated (Dec 8, 2025): Additional environment variables available for fine-tuning AI behavior.
+
 Security note: Keep your API key secret — do NOT commit it to GitHub.
