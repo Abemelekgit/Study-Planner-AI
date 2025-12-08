@@ -391,6 +391,12 @@ For issues or questions:
 3. Check Supabase console for data/auth issues
 4. Verify API keys in `.env.local`
 
+## Version History
+
+- **December 8, 2025**: Enhanced AI capabilities, improved UI/UX, security updates
+- **December 2, 2025**: Added server-side plan persistence and OpenAI integration
+- **November 2025**: Initial release
+
 ---
 
 Built with ❤️ using Next.js + Supabase + AI
