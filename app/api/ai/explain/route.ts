@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Generate an expanded explanation for a single plan block (course + tasks).
 // If AI_API_KEY is configured, this will call OpenAI to produce a natural, helpful paragraph.
+// Updated: Dec 8, 2025 - Enhanced fallback messaging
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
