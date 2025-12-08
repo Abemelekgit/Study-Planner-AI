@@ -18,7 +18,7 @@ export async function callOpenAI(messages: any[], opts: OpenAIOptions = {}) {
   const model = opts.model || process.env.AI_MODEL || 'gpt-4o-mini';
   const max_tokens = (opts.max_tokens ?? Number(process.env.AI_MAX_TOKENS)) || 400;
   const temperature = (opts.temperature ?? Number(process.env.AI_TEMPERATURE)) || 0.7;
-  const timeoutMs = (opts.timeoutMs ?? Number(process.env.AI_TIMEOUT_MS)) || 8000;
+  const timeoutMs = (opts.timeoutMs ?? Number(process.env.AI_TIMEOUT_MS)) || 10000;
   const retries = Math.max(1, (opts.retries ?? Number(process.env.AI_RETRIES)) || 2);
 
   let lastError: any = null;
