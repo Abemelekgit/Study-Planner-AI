@@ -41,27 +41,38 @@ export function TaskForm({
     e.preventDefault();
     setError('');
 
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
+    const normalizedEstimatedHours = estimatedHours ? Number(estimatedHours) : undefined;
+
+    if (!trimmedTitle) {
       setError('Task title is required');
+      return;
+    }
+
+    if (normalizedEstimatedHours !== undefined && normalizedEstimatedHours < 0) {
+      setError('Estimated hours must be 0 or greater');
       return;
     }
 
     try {
       await onSubmit({
-        title,
-        description: description || undefined,
+        title: trimmedTitle,
+        description: trimmedDescription || undefined,
         type,
         priority,
-        due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
-        estimated_hours: estimatedHours ? parseFloat(estimatedHours) : undefined,
+        due_date: dueDate ? new Date(`${dueDate}T00:00:00Z`).toISOString() : undefined,
+        estimated_hours: normalizedEstimatedHours,
       });
-      // Reset form
-      setTitle('');
-      setDescription('');
-      setType('homework');
-      setPriority('medium');
-      setDueDate('');
-      setEstimatedHours('');
+      if (!initialData) {
+        // Reset form after create
+        setTitle('');
+        setDescription('');
+        setType('homework');
+        setPriority('medium');
+        setDueDate('');
+        setEstimatedHours('');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save task');
     }
