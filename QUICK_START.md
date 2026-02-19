@@ -35,6 +35,9 @@ cp .env.local.example .env.local
    ```env
    NEXT_PUBLIC_SUPABASE_URL=paste_your_url_here
    NEXT_PUBLIC_SUPABASE_ANON_KEY=paste_your_key_here
+   AI_API_KEY=your_openai_api_key  # Optional - fallback planner works without it
+   AI_PROVIDER=openai
+   AI_MODEL=gpt-4o-mini
    ```
 
 ### Step 3️⃣: Set Up Database (2 minutes)
