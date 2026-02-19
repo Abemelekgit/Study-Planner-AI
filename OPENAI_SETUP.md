@@ -5,12 +5,14 @@ To enable richer AI-generated summaries and per-block explanations, set the foll
 
 - AI_API_KEY — your OpenAI API key (secret)
 - AI_MODEL — optional model name (defaults to `gpt-4o-mini` in the code)
+- AI_PROVIDER — optional provider flag (defaults to `openai`)
 
 Example `.env.local` entries:
 
 ```
 AI_API_KEY=sk-....
 AI_MODEL=gpt-4o-mini
+AI_PROVIDER=openai
 ```
 Note: you can set AI_MODEL to choose a model (for example: AI_MODEL=gpt-4o-mini). If unspecified, the server falls back to a sensible default.
 
