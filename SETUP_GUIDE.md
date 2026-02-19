@@ -106,6 +106,7 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 AI_API_KEY=your_openai_api_key  # Optional - app works without it
 AI_PROVIDER=openai
+AI_MODEL=gpt-4o-mini
 ```
 
 ### 4. Set Up Database
