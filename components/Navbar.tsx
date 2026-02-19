@@ -11,15 +11,20 @@ export function Navbar() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (!error && data.user) {
-        setUser({
-          id: data.user.id,
-          email: data.user.email || '',
-          user_metadata: data.user.user_metadata,
-        });
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (!error && data.user) {
+          setUser({
+            id: data.user.id,
+            email: data.user.email || '',
+            user_metadata: data.user.user_metadata,
+          });
+        } else {
+          setUser(null);
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     getUser();
@@ -36,6 +41,7 @@ export function Navbar() {
       } else {
         setUser(null);
       }
+      setLoading(false);
     });
 
     return () => {
@@ -44,8 +50,12 @@ export function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (err) {
+      console.warn('[Navbar] Failed to sign out', err);
+    }
   };
 
   return (
