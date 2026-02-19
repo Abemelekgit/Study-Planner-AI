@@ -44,19 +44,28 @@ export function CourseForm({
     e.preventDefault();
     setError('');
 
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+    const trimmedCode = code.trim();
+    const normalizedTargetHours = targetHours ? Number(targetHours) : undefined;
+
+    if (!trimmedName) {
       setError('Course name is required');
       return;
     }
 
+    if (normalizedTargetHours !== undefined) {
+      if (normalizedTargetHours < 0 || normalizedTargetHours > 168) {
+        setError('Target hours must be between 0 and 168');
+        return;
+      }
+    }
+
     try {
       await onSubmit({
-        name,
-        code: code || undefined,
+        name: trimmedName,
+        code: trimmedCode || undefined,
         color: color || undefined,
-        target_hours_per_week: targetHours
-          ? parseInt(targetHours, 10)
-          : undefined,
+        target_hours_per_week: normalizedTargetHours,
       });
       // Reset form
       setName('');
@@ -139,6 +148,7 @@ export function CourseForm({
             type="number"
             min="0"
             max="168"
+            step="0.5"
             value={targetHours}
             onChange={(e) => setTargetHours(e.target.value)}
             className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
