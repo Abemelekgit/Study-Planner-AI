@@ -48,6 +48,11 @@ export function TaskCard({
     ? new Date(task.due_date).toLocaleDateString()
     : 'No due date set';
 
+  const estimatedHours =
+    task.estimated_hours !== null && task.estimated_hours !== undefined
+      ? Number(task.estimated_hours)
+      : null;
+
   return (
     <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-slate-600 transition">
       <div className="flex justify-between items-start mb-2">
@@ -67,9 +72,9 @@ export function TaskCard({
 
       <div className="flex justify-between items-center mb-3">
         <span className="text-xs text-slate-400">{dueDate}</span>
-        {task.estimated_hours && (
+        {estimatedHours !== null && !Number.isNaN(estimatedHours) && (
           <span className="text-xs text-slate-400">
-            ⏱ {task.estimated_hours}h
+            ⏱ {estimatedHours}h
           </span>
         )}
       </div>
