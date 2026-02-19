@@ -66,6 +66,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=paste_your_anon_key_here
 # Optional - for AI plan generation
 # AI_API_KEY=your_openai_api_key
 # AI_PROVIDER=openai
+# AI_MODEL=gpt-4o-mini
 ```
 
 **Note:** Leave `AI_API_KEY` commented out for now. The app works without it.
