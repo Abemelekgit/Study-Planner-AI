@@ -29,7 +29,7 @@ A Next.js 14 web application that helps students organize courses and tasks whil
 
 - Node.js 18+ and npm
 - Supabase account (free tier available at [supabase.com](https://supabase.com))
--- OpenAI API key (optional - app works with fallback plan generator)
+- OpenAI API key (optional - app works with fallback plan generator)
   
   Note: If you don't provide an OpenAI API key the app will automatically use the built-in fallback planner so generation still works.
 
@@ -60,6 +60,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # AI/LLM
 AI_API_KEY=your_openai_api_key
 AI_PROVIDER=openai
+AI_MODEL=gpt-4o-mini
 ```
 
 #### Get Supabase Credentials
@@ -140,6 +141,7 @@ create policy "Users can delete own sessions" on public.study_sessions for delet
 
 ```bash
 npm run dev
+```
 ## Usage
 
 ### Server-side plan persistence
