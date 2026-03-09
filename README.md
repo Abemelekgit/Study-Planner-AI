@@ -161,8 +161,6 @@ Additional APIs for saved plans:
 
 Use the Supabase SQL editor to run `db/plans_rls.sql` after creating `plans` to enforce row-level security policies.
 
-```
-
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Usage
