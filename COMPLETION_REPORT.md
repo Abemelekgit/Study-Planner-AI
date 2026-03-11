@@ -31,7 +31,7 @@ A **complete, AI-powered Study Planner** web application with:
 - ✅ Tailwind CSS styling
 - ✅ 5 reusable components
 - ✅ 9 pages/routes
-- ✅ 1 API endpoint
+- ✅ 5 API endpoints
 - ✅ 3 database tables with RLS
 
 ### 📚 Documentation
