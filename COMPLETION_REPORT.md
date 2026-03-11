@@ -68,10 +68,11 @@ studyplannerApp/
 │   ├── .gitignore
 │   └── bible.md
 │
-├── 🎨 App Pages (9 files)
+├── 🎨 App Pages & API Routes (16 files)
 │   ├── app/page.tsx (Landing)
 │   ├── app/layout.tsx (Root)
 │   ├── app/globals.css (Styles)
+│   ├── app/contribute/page.tsx
 │   ├── app/dashboard/page.tsx
 │   ├── app/login/page.tsx
 │   ├── app/signup/page.tsx
@@ -79,7 +80,11 @@ studyplannerApp/
 │   ├── app/courses/[courseId]/page.tsx
 │   ├── app/tasks/page.tsx
 │   ├── app/planner/page.tsx
-│   └── app/api/ai/plan/route.ts
+│   ├── app/api/ai/plan/route.ts
+│   ├── app/api/ai/explain/route.ts
+│   ├── app/api/plans/list/route.ts
+│   ├── app/api/plans/save/route.ts
+│   └── app/api/plans/delete/route.ts
 │
 ├── 🧩 Components (5 files)
 │   ├── components/Navbar.tsx
@@ -88,9 +93,11 @@ studyplannerApp/
 │   ├── components/TaskCard.tsx
 │   └── components/TaskForm.tsx
 │
-└── 📚 Library (2 files)
-    ├── lib/types.ts
-    └── lib/supabaseClient.ts
+└── 📚 Library (4 files)
+    ├── lib/openaiClient.ts
+    ├── lib/supabaseClient.ts
+    ├── lib/supabaseServerClient.ts
+    └── lib/types.ts
 ```
 
 ---

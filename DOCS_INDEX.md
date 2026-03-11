@@ -70,6 +70,12 @@
 - Feature specifications
 - Tech stack requirements
 
+### 7. **FILE_MANIFEST.md** (File inventory)
+- Full project file listing
+- Directory and file counts
+- High-level file responsibilities
+- Quick structure reference
+
 ## 🚀 Getting the App Running (Choose Your Path)
 
 ### Path A: Quick Start (15 min)
@@ -155,6 +161,7 @@ studyplannerApp/
 │   ├── page.tsx                  Landing
 │   ├── layout.tsx                Root layout
 │   ├── globals.css               Global styles
+│   ├── contribute/page.tsx       Contributions page
 │   ├── dashboard/page.tsx        Dashboard
 │   ├── login/page.tsx            Login
 │   ├── signup/page.tsx           Sign up
@@ -162,7 +169,7 @@ studyplannerApp/
 │   ├── courses/[courseId]/       Course detail
 │   ├── tasks/page.tsx            All tasks
 │   ├── planner/page.tsx          AI planner
-│   └── api/ai/plan/route.ts      AI API
+│   └── api/                      Route handlers
 │
 ├── components/
 │   ├── Navbar.tsx

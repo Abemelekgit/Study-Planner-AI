@@ -13,13 +13,14 @@
 ```
 studyplannerApp/
 │
-├── 📖 DOCUMENTATION (6 files)
+├── 📖 DOCUMENTATION (7 files)
 │   ├── README.md (🌟 Main reference - 400+ lines)
 │   ├── GETTING_STARTED.md (🌟 Setup guide - 350+ lines)
 │   ├── SETUP_GUIDE.md (🌟 Architecture - 300+ lines)
 │   ├── PROJECT_SUMMARY.md (🌟 Completion report - 350+ lines)
 │   ├── DATABASE_SETUP.sql (🌟 DB schema - 200+ lines)
-│   └── DOCS_INDEX.md (Documentation index)
+│   ├── DOCS_INDEX.md (Documentation index)
+│   └── FILE_MANIFEST.md (Complete file inventory)
 │
 ├── 📄 CONFIG FILES (8 files)
 │   ├── package.json (Project metadata + dependencies)
@@ -31,11 +32,13 @@ studyplannerApp/
 │   ├── .gitignore (Git ignore rules)
 │   └── bible.md (Original project specifications)
 │
-├── 🎨 APP PAGES & ROUTES (9 files - 1500+ lines)
+├── 🎨 APP PAGES & ROUTES (16 files - 1500+ lines)
 │   ├── app/
 │   │   ├── page.tsx (Landing page - 100+ lines)
 │   │   ├── layout.tsx (Root layout - 50+ lines)
 │   │   ├── globals.css (Global styles - 20 lines)
+│   │   ├── contribute/
+│   │   │   └── page.tsx (Contributions page)
 │   │   ├── dashboard/
 │   │   │   └── page.tsx (Dashboard - 200+ lines)
 │   │   ├── login/
@@ -51,9 +54,18 @@ studyplannerApp/
 │   │   ├── planner/
 │   │   │   └── page.tsx (AI planner - 250+ lines)
 │   │   └── api/
-│   │       └── ai/
-│   │           └── plan/
-│   │               └── route.ts (AI generation - 150+ lines)
+│   │       ├── ai/
+│   │       │   ├── explain/
+│   │       │   │   └── route.ts (AI explanations)
+│   │       │   └── plan/
+│   │       │       └── route.ts (AI generation - 150+ lines)
+│   │       └── plans/
+│   │           ├── delete/
+│   │           │   └── route.ts (Delete saved plan)
+│   │           ├── list/
+│   │           │   └── route.ts (List saved plans)
+│   │           └── save/
+│   │               └── route.ts (Save plan)
 │
 ├── 🧩 COMPONENTS (5 files - 600+ lines)
 │   └── components/
@@ -63,10 +75,12 @@ studyplannerApp/
 │       ├── TaskCard.tsx (Task card - 100+ lines)
 │       └── TaskForm.tsx (Task form - 150+ lines)
 │
-├── 📚 LIBRARY FILES (2 files - 100+ lines)
+├── 📚 LIBRARY FILES (4 files - 100+ lines)
 │   └── lib/
-│       ├── types.ts (TypeScript types - 50+ lines)
-│       └── supabaseClient.ts (Supabase client - 15 lines)
+│       ├── openaiClient.ts (OpenAI client)
+│       ├── supabaseClient.ts (Supabase client - 15 lines)
+│       ├── supabaseServerClient.ts (Server-side Supabase client)
+│       └── types.ts (TypeScript types - 50+ lines)
 │
 └── 🎓 PROJECT FILES
     └── bible.md (Original specifications)
@@ -83,8 +97,8 @@ studyplannerApp/
 | Components (`.tsx`) | 5 | 600+ | Reusable UI components |
 | Configuration | 6 | 100+ | Build and project config |
 | Styles (`.css`) | 1 | 20+ | Global Tailwind styles |
-| API Routes | 1 | 150+ | Backend API endpoints |
-| Types & Utils | 2 | 100+ | TypeScript and utilities |
+| API Routes | 5 | 150+ | Backend API endpoints |
+| Types & Utils | 4 | 100+ | TypeScript and utilities |
 | Database (`.sql`) | 1 | 200+ | Database schema and setup |
 
 ### Documentation Files
@@ -96,6 +110,7 @@ studyplannerApp/
 | PROJECT_SUMMARY.md | 350+ | Project completion report |
 | DATABASE_SETUP.sql | 200+ | Database initialization |
 | DOCS_INDEX.md | 200+ | Documentation index |
+| FILE_MANIFEST.md | 400+ | Complete file inventory |
 
 ---
 
